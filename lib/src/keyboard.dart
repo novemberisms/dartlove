@@ -32,7 +32,7 @@ class _Keyboard {
     print("keyboard initialized");
   }
 
-  void _update() {
+  void _clearMaps() {
     _keysPressed.clear();
     _keysReleased.clear();
   }

@@ -32,10 +32,10 @@ Future run(LoveApp app, [String canvasQuerySelector = "#canvas"]) async {
     app.draw();
     // update timer
     _prevTime = currTime;
-    // update keyboard state
-    keyboard._update();
-    // update mouse state
-    mouse._update();
+    // clear keyboard just-pressed state
+    keyboard._clearMaps();
+    // clear mouse just-clicked state
+    mouse._clearMaps();
   }
 }
 

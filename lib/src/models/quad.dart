@@ -1,6 +1,8 @@
 part of dartlove;
 
 /// Represents a region inside an image to draw from.
+/// 
+/// TODO: take into account `scaledWidth` and `scaledHeight` when drawing
 class Quad {
   final num startX;
   final num startY;

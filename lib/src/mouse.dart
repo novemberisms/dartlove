@@ -41,7 +41,7 @@ class _Mouse {
     print("Mouse initialized");
   }
 
-  void _update() {
+  void _clearMaps() {
     _pressed.clear();
     _released.clear();
   }

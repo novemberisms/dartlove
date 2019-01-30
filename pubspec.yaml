@@ -1,5 +1,5 @@
 name: dartlove
-description: A starting point for Dart libraries or applications.
+description: A port of LOVE2D to dart for making web games using HTML canvas.
 version: 0.0.1
 author: novemberisms <briansarfati@gmail.com>
 

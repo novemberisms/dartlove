@@ -9,6 +9,8 @@ class Image {
   num get width => element.width;
   num get height => element.height;
 
+  Point getDimensions() => Point(width, height);
+
   Image(String path) : element = ImageElement(src: path) {
     element.onLoad.listen(_onLoad);
   }
