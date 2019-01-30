@@ -1,6 +1,8 @@
 part of dartlove;
 
 enum FillStyle { line, fill }
+enum TextBaseLine { top, bottom, middle, alphabetic, hanging }
+
 
 class _Graphics {
   CanvasElement _canvas;
@@ -24,6 +26,9 @@ class _Graphics {
     _canvas.height = _canvas.scrollHeight;
 
     _canvasPosition = _canvas.getBoundingClientRect().topLeft;
+
+    _context.textBaseline = "top";
+    _context.font = "20px Arial";
   }
 
   /// the width of the main canvas
@@ -73,13 +78,53 @@ class _Graphics {
     }
   }
 
-  void draw(Image image, num x, num y) {
+  void print(String text, num x, num y, [num maxWidth]) {
+    _context.fillText(text, x, y, maxWidth);
+  }
+
+  void setTextBaseLine(TextBaseLine baseline) {
+    String stringForm;
+    switch (baseline) {
+      case TextBaseLine.top:
+        stringForm = "top";
+        break;
+      case TextBaseLine.bottom:
+        stringForm = "bottom";
+        break;
+      case TextBaseLine.alphabetic:
+        stringForm = "alphabetic";
+        break;
+      case TextBaseLine.middle:
+        stringForm = "middle";
+        break;
+      case TextBaseLine.hanging:
+        stringForm = "hanging";
+        break;
+    }
+    _context.textBaseline = stringForm;
+  }
+
+  void draw(Image image, num x, num y,
+      [num r, num sx, num sy, num ox, num oy, num kx, num ky]) {
     if (!image.loaded) return;
     _context.drawImage(image.element, x, y);
   }
 
-  void drawQuad(Image image, Quad quad, num x, num y) {
+  void drawQuad(Image image, Quad quad, num x, num y,
+      [num r, num sx, num sy, num ox, num oy, num kx, num ky]) {
     if (!image.loaded) return;
+    _context.drawImageScaledFromSource(image.element, quad.startX, quad.startY,
+        quad.width, quad.height, x, y, quad.width, quad.height);
+  }
+
+  void drawToRect(Image image, Rectangle destinationRect) {
+    if (!image.loaded) return;
+    _context.drawImageToRect(image.element, destinationRect);
+  }
+
+  void drawQuadToRect(Image image, Quad quad, Rectangle destinationRect) {
+    if (!image.loaded) return;
+    _context.drawImageToRect(image.element, destinationRect, sourceRect: quad._getSourceRect());
   }
 
   /// clears the current active canvas
@@ -94,8 +139,6 @@ class _Graphics {
   void push() => _context.save();
   void pop() => _context.restore();
 
-  Future<Image> loadImage(String path) => Image.asyncLoad(path);
+  Future<Image> newImageAsync(String path) => Image.asyncLoad(path);
   Image newImage(String path) => Image(path);
 }
-
-

@@ -26,7 +26,5 @@ class Image {
 
   void _onLoad(Event e) {
     _loaded = true;
-    print("loaded!");
-    print("width $width\nheight $height");
   }
 }
