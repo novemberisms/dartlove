@@ -5,12 +5,14 @@ enum TextBaseline { top, bottom, middle, alphabetic, hanging }
 
 const defaultTextBaseline = TextBaseline.top;
 const defaultFont = "20px Arial";
+final defaultBackgroundColor = Color.light_blue;
 
 class _Graphics {
   CanvasElement _canvas;
   CanvasRenderingContext2D _context;
 
-  Color _color = Color.white;
+  Color _color;
+  Color _backgroundColor;
 
   num _width;
   num _height;
@@ -32,6 +34,9 @@ class _Graphics {
 
     _context.font = defaultFont;
     setTextBaseline(defaultTextBaseline);
+    setLineWidth(1);
+    setColor(Color.white);
+    setBackgroundColor(defaultBackgroundColor);
   }
 
   /// the width of the main canvas
@@ -51,8 +56,12 @@ class _Graphics {
     _color = color;
     _context.setFillColorRgb(_color.r8, _color.g8, _color.b8, _color.a);
     _context.setStrokeColorRgb(_color.r8, _color.g8, _color.b8, _color.a);
+    _context.globalAlpha = color.a;
   }
 
+  void resetColor() => setColor(Color.white);
+
+  /// Draws a rectangle with the given style to the screen
   void rectangle(FillStyle style, num x, num y, num w, num h) {
     switch (style) {
       case FillStyle.fill:
@@ -107,6 +116,8 @@ class _Graphics {
     _context.textBaseline = stringForm;
   }
 
+  void setLineWidth(num width) => _context.lineWidth = width;
+
   /// draws an [Image] to the canvas
   void draw(Image image, num x, num y,
       [num r = 0, num sx = 1, num sy = 1, num ox = 0, num oy = 0]) {
@@ -133,7 +144,7 @@ class _Graphics {
   }
 
   /// draws part of an [Image] described by a [Quad] to the canvas
-  /// 
+  ///
   /// TODO: take into account the quad's `scaledWidth` and `scaledHeight`
   void drawQuad(Image image, Quad quad, num x, num y,
       [num r = 0, num sx = 1, num sy = 1, num ox = 0, num oy = 0]) {
@@ -179,8 +190,17 @@ class _Graphics {
         sourceRect: quad._getSourceRect());
   }
 
+  void setBackgroundColor(Color color) => _backgroundColor = color;
+  Color getBackgroundColor() => _backgroundColor;
+
   /// clears the current active canvas
-  void clear() => _context.clearRect(0, 0, width, height);
+  void clear() {
+    _context.save();
+    _context.setFillColorRgb(_backgroundColor.r8, _backgroundColor.g8,
+        _backgroundColor.b8, _backgroundColor.a);
+    _context.fillRect(0, 0, width, height);
+    _context.restore();
+  }
 
   /// resets the state of graphics each frame
   void reset() {
@@ -190,7 +210,11 @@ class _Graphics {
 
   void push() => _context.save();
   void pop() => _context.restore();
+  void translate(num x, num y) => _context.translate(x, y);
+  void rotate(num r) => _context.rotate(r);
+  void scale(num sx, num sy) => _context.scale(sx, sy);
 
   Future<Image> newImageAsync(String path) => Image.asyncLoad(path);
   Image newImage(String path) => Image(path);
+  Quad newQuad(num x, num y, num w, num h, num sx, num sy) => Quad(x, y, w, h, sx, sy);
 }

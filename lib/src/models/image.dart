@@ -15,10 +15,10 @@ class Image {
     element.onLoad.listen(_onLoad);
   }
 
-  Image._(String path) : element = ImageElement(src: path);
+  Image._internal(String path) : element = ImageElement(src: path);
 
   static Future<Image> asyncLoad(String path) async {
-    final image = Image._(path);
+    final image = Image._internal(path);
     await for (final e in image.element.onLoad) {
       image._onLoad(e);
       break;
