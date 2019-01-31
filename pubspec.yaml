@@ -3,6 +3,7 @@ description: A port of LOVE2D to dart for making web games using HTML canvas.
 version: 0.0.1
 author: novemberisms <briansarfati@gmail.com>
 repository: https://github.com/novemberisms/dartlove
+homepage: https://github.com/novemberisms/dartlove
 
 environment:
   sdk: '>=2.0.0 <3.0.0'
