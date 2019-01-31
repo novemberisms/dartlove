@@ -1,7 +1,7 @@
 part of dartlove;
 
 /// Represents a region inside an image to draw from.
-/// 
+///
 /// TODO: take into account `scaledWidth` and `scaledHeight` when drawing
 class Quad {
   final num startX;
@@ -19,7 +19,8 @@ class Quad {
 
   /// Create a quad whose `scaledWidth` and `scaledHeight` are the same as the given Image's.
   /// This means that no prescaling is done on the image before taking the rectangular region from it
-  Quad.noPrescale(Image image, this.startX, this.startY, this.width, this.height)
+  Quad.noPrescale(
+      Image image, this.startX, this.startY, this.width, this.height)
       : scaledWidth = image.width,
         scaledHeight = image.height;
 

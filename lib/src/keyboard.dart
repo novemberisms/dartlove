@@ -13,7 +13,7 @@ final _keyTranslations = <String, String>{
 };
 
 String _lookupTranslatedKey(String htmlKey) =>
-  _keyTranslations[htmlKey] ?? htmlKey;
+    _keyTranslations[htmlKey] ?? htmlKey;
 
 class _Keyboard {
   bool isDown(String key) => _keysDown[key] ?? false;
@@ -53,8 +53,8 @@ class _Keyboard {
     _setMapKey(e, _keysReleased, true);
   }
 
-  void _setMapKey(KeyboardEvent e, HashMap map, bool value) => 
-    map[_lookupTranslatedKey(e.key)] = value; 
+  void _setMapKey(KeyboardEvent e, HashMap map, bool value) =>
+      map[_lookupTranslatedKey(e.key)] = value;
 }
 
 class LoveKeyboardEvent {

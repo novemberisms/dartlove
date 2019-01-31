@@ -84,5 +84,10 @@ class Color {
   String toString() => "Color($r, $g, $b, $a)";
 
   static bool isSame(Color a, Color b) =>
-      a != null && b != null && a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a;
+      a != null &&
+      b != null &&
+      a.r == b.r &&
+      a.g == b.g &&
+      a.b == b.b &&
+      a.a == b.a;
 }

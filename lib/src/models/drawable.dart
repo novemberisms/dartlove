@@ -1,5 +1,3 @@
 part of dartlove;
 
-abstract class Drawable {
-  
-}
+abstract class Drawable {}

@@ -216,5 +216,6 @@ class _Graphics {
 
   Future<Image> newImageAsync(String path) => Image.asyncLoad(path);
   Image newImage(String path) => Image(path);
-  Quad newQuad(num x, num y, num w, num h, num sx, num sy) => Quad(x, y, w, h, sx, sy);
+  Quad newQuad(num x, num y, num w, num h, num sx, num sy) =>
+      Quad(x, y, w, h, sx, sy);
 }

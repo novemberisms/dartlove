@@ -1,5 +1,3 @@
 part of dartlove;
 
-class _Touch {
-  
-}
+class _Touch {}
