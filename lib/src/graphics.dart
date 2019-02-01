@@ -8,8 +8,9 @@ const defaultFont = "20px Arial";
 final defaultBackgroundColor = Color.light_blue;
 
 class _Graphics {
-  CanvasElement _canvas;
-  CanvasRenderingContext2D _context;
+  Canvas _mainCanvas;
+  Canvas _currentCanvas;
+  CanvasRenderingContext2D get _context => _currentCanvas.element.context2D;
 
   Color _color;
   Color _backgroundColor;
@@ -21,16 +22,13 @@ class _Graphics {
   Point<num> _canvasPosition;
 
   void _initMainCanvas(CanvasElement canvas) {
-    _canvas = canvas;
-    _context = _canvas.context2D;
-    _width = _canvas.scrollWidth.toDouble();
-    _height = _canvas.scrollHeight.toDouble();
-    // ugh. the html canvas api is a disaster. this is required or else the pixels
-    // will scale such that the canvas screen occupies 300 x 150 pixels no matter what
-    _canvas.width = _canvas.scrollWidth;
-    _canvas.height = _canvas.scrollHeight;
+    _mainCanvas = Canvas.fromElement(canvas);
+    _width = _mainCanvas.width;
+    _height = _mainCanvas.height;
 
-    _canvasPosition = _canvas.getBoundingClientRect().topLeft;
+    setCanvas(_mainCanvas);
+
+    _canvasPosition = canvas.getBoundingClientRect().topLeft;
 
     _context.font = defaultFont;
     setTextBaseline(defaultTextBaseline);
@@ -38,6 +36,12 @@ class _Graphics {
     setColor(Color.white);
     setBackgroundColor(defaultBackgroundColor);
   }
+
+  void setCanvas([Canvas canvas]) {
+    _currentCanvas = canvas ?? _mainCanvas;
+  }
+
+  Canvas getCanvas() => _currentCanvas;
 
   /// the width of the main canvas
   num get width => _width;
@@ -117,41 +121,43 @@ class _Graphics {
   }
 
   void setLineWidth(num width) => _context.lineWidth = width;
+  num getLineWidth() => _context.lineWidth;
 
-  /// draws an [Image] to the canvas
-  void draw(Image image, num x, num y,
+  /// draws a [Drawable] to the active canvas
+  void draw(Drawable drawable, num x, num y,
       [num r = 0, num sx = 1, num sy = 1, num ox = 0, num oy = 0]) {
-    if (!image.loaded) return;
+    if (!drawable.loaded) return;
     if (r == 0 && sx == 1 && sy == 1) {
-      // simplest case. just draw the image offset by the given origins
-      _context.drawImage(image.element, x - ox, y - oy);
+      // simplest case. just draw the drawable offset by the given origins
+      _context.drawImage(drawable.element, x - ox, y - oy);
     } else if (r == 0) {
       // simple case with no rotation. ox and oy need to be multiplied by sx and sy
       // to behave the same way as LOVE does
-      _context.drawImageScaled(image.element, x - ox * sx, y - oy * sy,
-          image.width * sx, image.height * sy);
+      _context.drawImageScaled(drawable.element, x - ox * sx, y - oy * sy,
+          drawable.width * sx, drawable.height * sy);
     } else {
       // if a rotation is given, we need to translate the canvas, rotate it, and then
-      // translate it back, and then draw the image, taking into account origin and scale
-      _context.save();
-      _context.translate(x, y);
-      _context.rotate(r);
-      _context.translate(-x, -y);
-      _context.drawImageScaled(image.element, x - ox * sx, y - oy * sy,
-          image.width * sx, image.height * sy);
-      _context.restore();
+      // translate it back, and then draw the drawable, taking into account origin and scale
+      _context
+        ..save()
+        ..translate(x, y)
+        ..rotate(r)
+        ..translate(-x, -y)
+        ..drawImageScaled(drawable.element, x - ox * sx, y - oy * sy,
+            drawable.width * sx, drawable.height * sy)
+        ..restore();
     }
   }
 
-  /// draws part of an [Image] described by a [Quad] to the canvas
+  /// draws part of a [Drawable] described by a [Quad] to the canvas
   ///
   /// TODO: take into account the quad's `scaledWidth` and `scaledHeight`
-  void drawQuad(Image image, Quad quad, num x, num y,
+  void drawQuad(Drawable drawable, Quad quad, num x, num y,
       [num r = 0, num sx = 1, num sy = 1, num ox = 0, num oy = 0]) {
-    if (!image.loaded) return;
+    if (!drawable.loaded) return;
     if (r == 0) {
       _context.drawImageScaledFromSource(
-          image.element,
+          drawable.element,
           quad.startX,
           quad.startY,
           quad.width,
@@ -161,32 +167,33 @@ class _Graphics {
           quad.width * sx,
           quad.height * sy);
     } else {
-      _context.save();
-      _context.translate(x, y);
-      _context.rotate(r);
-      _context.translate(-x, -y);
-      _context.drawImageScaledFromSource(
-          image.element,
-          quad.startX,
-          quad.startY,
-          quad.width,
-          quad.height,
-          x - ox * sx,
-          y - oy * sy,
-          quad.width * sx,
-          quad.height * sy);
-      _context.restore();
+      _context
+        ..save()
+        ..translate(x, y)
+        ..rotate(r)
+        ..translate(-x, -y)
+        ..drawImageScaledFromSource(
+            drawable.element,
+            quad.startX,
+            quad.startY,
+            quad.width,
+            quad.height,
+            x - ox * sx,
+            y - oy * sy,
+            quad.width * sx,
+            quad.height * sy)
+        ..restore();
     }
   }
 
-  void drawToRect(Image image, Rectangle destinationRect) {
-    if (!image.loaded) return;
-    _context.drawImageToRect(image.element, destinationRect);
+  void drawToRect(Drawable drawable, Rectangle destinationRect) {
+    if (!drawable.loaded) return;
+    _context.drawImageToRect(drawable.element, destinationRect);
   }
 
-  void drawQuadToRect(Image image, Quad quad, Rectangle destinationRect) {
-    if (!image.loaded) return;
-    _context.drawImageToRect(image.element, destinationRect,
+  void drawQuadToRect(Drawable drawable, Quad quad, Rectangle destinationRect) {
+    if (!drawable.loaded) return;
+    _context.drawImageToRect(drawable.element, destinationRect,
         sourceRect: quad._getSourceRect());
   }
 
@@ -194,12 +201,13 @@ class _Graphics {
   Color getBackgroundColor() => _backgroundColor;
 
   /// clears the current active canvas
-  void clear() {
-    _context.save();
-    _context.setFillColorRgb(_backgroundColor.r8, _backgroundColor.g8,
-        _backgroundColor.b8, _backgroundColor.a);
-    _context.fillRect(0, 0, width, height);
-    _context.restore();
+  void clear([Color clearColor]) {
+    final color = clearColor ?? _backgroundColor;
+    _context
+      ..save()
+      ..setFillColorRgb(color.r8, color.g8, color.b8, color.a)
+      ..fillRect(0, 0, _currentCanvas.width, _currentCanvas.height)
+      ..restore();
   }
 
   /// resets the state of graphics each frame
@@ -218,4 +226,5 @@ class _Graphics {
   Image newImage(String path) => Image(path);
   Quad newQuad(num x, num y, num w, num h, num sx, num sy) =>
       Quad(x, y, w, h, sx, sy);
+  Canvas newCanvas(num width, num height) => Canvas(width, height);
 }

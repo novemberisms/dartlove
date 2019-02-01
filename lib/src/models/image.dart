@@ -1,6 +1,6 @@
 part of dartlove;
 
-class Image {
+class Image implements Drawable {
   final ImageElement element;
 
   bool get loaded => _loaded;
@@ -8,7 +8,8 @@ class Image {
 
   num get width => element.width;
   num get height => element.height;
-
+  num getWidth() => element.width;
+  num getHeight() => element.height;
   Point getDimensions() => Point(width, height);
 
   Image(String path) : element = ImageElement(src: path) {
