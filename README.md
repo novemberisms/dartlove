@@ -10,6 +10,15 @@ This library is under heavy construction! I will update this page with documenta
 
 TODO
 
+# TODO
+
+* Fill out the Usage section above
+* More examples and documentation
+* Eventually transition to WebGL???
+* Port the `love.audio` module
+* Add a custom `love.touch` module
+* Find a way to add user-defined fonts
+
 # License
 
 MIT License

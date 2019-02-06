@@ -55,6 +55,9 @@ class _Graphics {
   /// gets the height of the main canvas
   num getHeight() => _height;
 
+  /// gets the width and height of the main canvas as a Point
+  Point getDimensions() => Point(_width, _height);
+
   void setColor(Color color) {
     if (Color.isSame(color, _color)) return;
     _color = color;
@@ -130,7 +133,7 @@ class _Graphics {
     if (r == 0 && sx == 1 && sy == 1) {
       // simplest case. just draw the drawable offset by the given origins
       _context.drawImage(drawable.element, x - ox, y - oy);
-    } else if (r == 0) {
+    } else if (r == 0 && sx > 0 && sy > 0) {
       // simple case with no rotation. ox and oy need to be multiplied by sx and sy
       // to behave the same way as LOVE does
       _context.drawImageScaled(drawable.element, x - ox * sx, y - oy * sy,
@@ -141,10 +144,11 @@ class _Graphics {
       _context
         ..save()
         ..translate(x, y)
+        ..scale(sx > 0 ? 1 : -1, sy > 0 ? 1 : -1)
         ..rotate(r)
         ..translate(-x, -y)
         ..drawImageScaled(drawable.element, x - ox * sx, y - oy * sy,
-            drawable.width * sx, drawable.height * sy)
+            drawable.width * sx.abs(), drawable.height * sy.abs())
         ..restore();
     }
   }
@@ -155,7 +159,7 @@ class _Graphics {
   void drawQuad(Drawable drawable, Quad quad, num x, num y,
       [num r = 0, num sx = 1, num sy = 1, num ox = 0, num oy = 0]) {
     if (!drawable.loaded) return;
-    if (r == 0) {
+    if (r == 0 && sx > 0 && sy > 0) {
       _context.drawImageScaledFromSource(
           drawable.element,
           quad.startX,
@@ -170,6 +174,7 @@ class _Graphics {
       _context
         ..save()
         ..translate(x, y)
+        ..scale(sx > 0 ? 1 : -1, sy > 0 ? 1 : -1)
         ..rotate(r)
         ..translate(-x, -y)
         ..drawImageScaledFromSource(
@@ -180,8 +185,8 @@ class _Graphics {
             quad.height,
             x - ox * sx,
             y - oy * sy,
-            quad.width * sx,
-            quad.height * sy)
+            quad.width * sx.abs(),
+            quad.height * sy.abs())
         ..restore();
     }
   }
@@ -213,6 +218,10 @@ class _Graphics {
   /// resets the state of graphics each frame
   void reset() {
     _context.restore();
+    if (_currentCanvas != _mainCanvas) {
+      setCanvas(_mainCanvas);
+      _context.restore();
+    }
     setColor(Color.white);
   }
 

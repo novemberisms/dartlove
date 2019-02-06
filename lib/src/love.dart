@@ -22,8 +22,9 @@ Future run(LoveApp app, [String canvasQuerySelector = "#canvas"]) async {
   while (true) {
     // this is the new way to do it instead of a setInterval
     final currTime = await window.animationFrame;
-    // call love.update
-    app.update((currTime - _prevTime) / 1000);
+    // call love.update with the delta time
+    final dt = min((currTime - _prevTime) / 1000, app.maximumDt);
+    app.update(dt);
     // reset any transformations or colors
     graphics.reset();
     // clear the main canvas
@@ -48,7 +49,7 @@ abstract class LoveApp {
   void mousemoved(LoveMouseEvent mouseEvent) {}
   void mousepressed(LoveMouseEvent mouseEvent) {}
   void mousereleased(LoveMouseEvent mouseEvent) {}
-
+  num maximumDt = 1 / 30;
   LoveApp() {
     window
       ..onKeyPress.listen((e) => keypressed(LoveKeyboardEvent._internal(e)))

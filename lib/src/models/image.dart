@@ -1,15 +1,26 @@
 part of dartlove;
 
 class Image implements Drawable {
+  @override
   final ImageElement element;
 
+  @override
   bool get loaded => _loaded;
   bool _loaded = false;
 
+  @override
   num get width => element.width;
+
+  @override
   num get height => element.height;
+
+  @override
   num getWidth() => element.width;
+
+  @override
   num getHeight() => element.height;
+
+  @override
   Point getDimensions() => Point(width, height);
 
   Image(String path) : element = ImageElement(src: path) {

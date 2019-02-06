@@ -1,9 +1,13 @@
 part of dartlove;
 
 class Canvas implements Drawable {
+  @override
   num get width => element.width;
+  @override
   num get height => element.height;
+  @override
   bool get loaded => true;
+  @override
   final CanvasElement element;
   Canvas(num width, num height)
       : element = CanvasElement(width: width, height: height);
@@ -14,8 +18,11 @@ class Canvas implements Drawable {
     element.height = element.scrollHeight;
   }
 
+  @override
   num getWidth() => element.width;
+  @override
   num getHeight() => element.height;
+  @override
   Point getDimensions() => Point(width, height);
 
   void renderTo(void fn()) {
