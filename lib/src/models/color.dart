@@ -19,23 +19,23 @@ class Color {
         b = ((hex >> 0) & 0xff) / 255,
         a = 1;
 
-  static Color get pure_white => const Color.fromRGB(0xffffff);
-  static Color get pure_black => const Color.fromRGB(0x000000);
-  static Color get pure_red => const Color.fromRGB(0xff0000);
-  static Color get pure_green => const Color.fromRGB(0x00ff00);
-  static Color get pure_blue => const Color.fromRGB(0x0000ff);
+  static Color get pureWhite => const Color.fromRGB(0xffffff);
+  static Color get pureBlack => const Color.fromRGB(0x000000);
+  static Color get pureRed => const Color.fromRGB(0xff0000);
+  static Color get pureGreen => const Color.fromRGB(0x00ff00);
+  static Color get pureBlue => const Color.fromRGB(0x0000ff);
 
   /// palette taken from https://lospec.com/palette-list/sweetie-16
   static Color get white => const Color.fromRGB(0xF4F4F4);
 
   /// palette taken from https://lospec.com/palette-list/sweetie-16
-  static Color get light_grey => const Color.fromRGB(0x93B6C1);
+  static Color get lightGrey => const Color.fromRGB(0x93B6C1);
 
   /// palette taken from https://lospec.com/palette-list/sweetie-16
   static Color get grey => const Color.fromRGB(0x557185);
 
   /// palette taken from https://lospec.com/palette-list/sweetie-16
-  static Color get dark_grey => const Color.fromRGB(0x324056);
+  static Color get darkGrey => const Color.fromRGB(0x324056);
 
   /// palette taken from https://lospec.com/palette-list/sweetie-16
   static Color get black => const Color.fromRGB(0x1A1C2C);
@@ -53,22 +53,22 @@ class Color {
   static Color get yellow => const Color.fromRGB(0xFFD079);
 
   /// palette taken from https://lospec.com/palette-list/sweetie-16
-  static Color get yellow_green => const Color.fromRGB(0xA0F072);
+  static Color get yellowGreen => const Color.fromRGB(0xA0F072);
 
   /// palette taken from https://lospec.com/palette-list/sweetie-16
   static Color get green => const Color.fromRGB(0x38B86E);
 
   /// palette taken from https://lospec.com/palette-list/sweetie-16
-  static Color get blue_green => const Color.fromRGB(0x276E7B);
+  static Color get blueGreen => const Color.fromRGB(0x276E7B);
 
   /// palette taken from https://lospec.com/palette-list/sweetie-16
-  static Color get dark_blue => const Color.fromRGB(0x29366F);
+  static Color get darkBlue => const Color.fromRGB(0x29366F);
 
   /// palette taken from https://lospec.com/palette-list/sweetie-16
   static Color get blue => const Color.fromRGB(0x405BD0);
 
   /// palette taken from https://lospec.com/palette-list/sweetie-16
-  static Color get light_blue => const Color.fromRGB(0x4FA4F7);
+  static Color get lightBlue => const Color.fromRGB(0x4FA4F7);
 
   /// palette taken from https://lospec.com/palette-list/sweetie-16
   static Color get cyan => const Color.fromRGB(0x86ECF8);

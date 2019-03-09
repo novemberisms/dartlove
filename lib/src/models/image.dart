@@ -1,6 +1,6 @@
 part of dartlove;
 
-class Image implements Drawable {
+class Image extends Drawable {
   @override
   final ImageElement element;
 

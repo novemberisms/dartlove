@@ -1,6 +1,6 @@
 part of dartlove;
 
-class Canvas implements Drawable {
+class Canvas extends Drawable {
   @override
   num get width => element.width;
   @override

@@ -3,14 +3,10 @@
 /// More dartdocs go here.
 library dartlove;
 
-// import "package:meta/meta.dart";
 import "dart:html";
 import "dart:async";
 import "dart:collection";
-import "dart:math";
-
-export "dart:math";
-export "package:meta/meta.dart";
+import "dart:math" as math;
 
 part "src/love.dart";
 part "src/graphics.dart";

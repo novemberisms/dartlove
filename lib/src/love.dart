@@ -1,10 +1,10 @@
 part of dartlove;
 
 // initialize the modules
-_Graphics graphics = _Graphics();
-_Keyboard keyboard = _Keyboard();
-_Mouse mouse = _Mouse();
-_Touch touch = _Touch();
+final _Graphics graphics = _Graphics();
+final _Keyboard keyboard = _Keyboard();
+final _Mouse mouse = _Mouse();
+final _Touch touch = _Touch();
 
 Future run(LoveApp app, [String canvasQuerySelector = "#canvas"]) async {
   // acquire the canvas and initialize
@@ -23,7 +23,7 @@ Future run(LoveApp app, [String canvasQuerySelector = "#canvas"]) async {
     // this is the new way to do it instead of a setInterval
     final currTime = await window.animationFrame;
     // call love.update with the delta time
-    final dt = min((currTime - _prevTime) / 1000, app.maximumDt);
+    final dt = math.min((currTime - _prevTime) / 1000, app.maximumDt);
     app.update(dt);
     // reset any transformations or colors
     graphics.reset();

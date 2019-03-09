@@ -1,93 +1,36 @@
 part of dartlove;
 
+const defaultFont = "20px Arial";
+const defaultTextBaseline = TextBaseline.top;
+
+final defaultBackgroundColor = Color.lightBlue;
 enum FillStyle { line, fill }
 enum TextBaseline { top, bottom, middle, alphabetic, hanging }
-
-const defaultTextBaseline = TextBaseline.top;
-const defaultFont = "20px Arial";
-final defaultBackgroundColor = Color.light_blue;
 
 class _Graphics {
   Canvas _mainCanvas;
   Canvas _currentCanvas;
-  CanvasRenderingContext2D get _context => _currentCanvas.element.context2D;
-
   Color _color;
   Color _backgroundColor;
-
   num _width;
   num _height;
 
   /// used in [_Mouse] as an offset to all mouse positions
   Point<num> _canvasPosition;
 
-  void _initMainCanvas(CanvasElement canvas) {
-    _mainCanvas = Canvas.fromElement(canvas);
-    _width = _mainCanvas.width;
-    _height = _mainCanvas.height;
-
-    setCanvas(_mainCanvas);
-
-    _canvasPosition = canvas.getBoundingClientRect().topLeft;
-
-    _context.font = defaultFont;
-    setTextBaseline(defaultTextBaseline);
-    setLineWidth(1);
-    setColor(Color.white);
-    setBackgroundColor(defaultBackgroundColor);
-  }
-
-  void setCanvas([Canvas canvas]) {
-    _currentCanvas = canvas ?? _mainCanvas;
-  }
-
-  Canvas getCanvas() => _currentCanvas;
-
-  /// the width of the main canvas
-  num get width => _width;
-
-  /// the height of the main canvas
+  /// The height of the main canvas.
   num get height => _height;
 
-  /// gets the width of the main canvas
-  num getWidth() => _width;
+  /// The width of the main canvas.
+  num get width => _width;
 
-  /// gets the height of the main canvas
-  num getHeight() => _height;
+  CanvasRenderingContext2D get _context => _currentCanvas.element.context2D;
 
-  /// gets the width and height of the main canvas as a Point
-  Point getDimensions() => Point(_width, _height);
-
-  void setColor(Color color) {
-    if (Color.isSame(color, _color)) return;
-    _color = color;
-    _context.setFillColorRgb(_color.r8, _color.g8, _color.b8, _color.a);
-    _context.setStrokeColorRgb(_color.r8, _color.g8, _color.b8, _color.a);
-    _context.globalAlpha = color.a;
-  }
-
-  void resetColor() => setColor(Color.white);
-
-  /// Draws a rectangle with the given style to the screen
-  void rectangle(FillStyle style, num x, num y, num w, num h) {
-    switch (style) {
-      case FillStyle.fill:
-        return _context.fillRect(x, y, w, h);
-      case FillStyle.line:
-        return _context.strokeRect(x, y, w, h);
-    }
-  }
-
-  void line(num x1, num y1, num x2, num y2) => _context
-    ..beginPath()
-    ..moveTo(x1, y1)
-    ..lineTo(x2, y2)
-    ..stroke();
-
+  /// Draws a circle to the currently active canvas.
   void circle(FillStyle style, num x, num y, num r) {
     _context
       ..beginPath()
-      ..arc(x, y, r, 0, pi * 2);
+      ..arc(x, y, r, 0, math.pi * 2);
 
     switch (style) {
       case FillStyle.fill:
@@ -97,36 +40,19 @@ class _Graphics {
     }
   }
 
-  void print(String text, num x, num y, [num maxWidth]) {
-    _context.fillText(text, x, y, maxWidth);
+  /// Clears the current active canvas.
+  void clear([Color clearColor]) {
+    final color = clearColor ?? _backgroundColor;
+    _context
+      ..save()
+      ..setFillColorRgb(color.r8, color.g8, color.b8, color.a)
+      ..fillRect(0, 0, _currentCanvas.width, _currentCanvas.height)
+      ..restore();
   }
 
-  void setTextBaseline(TextBaseline baseline) {
-    String stringForm;
-    switch (baseline) {
-      case TextBaseline.top:
-        stringForm = "top";
-        break;
-      case TextBaseline.bottom:
-        stringForm = "bottom";
-        break;
-      case TextBaseline.alphabetic:
-        stringForm = "alphabetic";
-        break;
-      case TextBaseline.middle:
-        stringForm = "middle";
-        break;
-      case TextBaseline.hanging:
-        stringForm = "hanging";
-        break;
-    }
-    _context.textBaseline = stringForm;
-  }
-
-  void setLineWidth(num width) => _context.lineWidth = width;
-  num getLineWidth() => _context.lineWidth;
-
-  /// draws a [Drawable] to the active canvas
+  /// Draws a [Drawable] to the active canvas. `x` and `y` determine the position to draw at, `r` is the rotation,
+  /// `sx` and `sy` determine the scale of the draw operation, and `ox` and `oy` determine the position of the origin.
+  /// Note that `kx` and `ky` (sheer) is not supported yet.
   void draw(Drawable drawable, num x, num y,
       [num r = 0, num sx = 1, num sy = 1, num ox = 0, num oy = 0]) {
     if (!drawable.loaded) return;
@@ -153,9 +79,8 @@ class _Graphics {
     }
   }
 
-  /// draws part of a [Drawable] described by a [Quad] to the canvas
-  ///
-  /// TODO: take into account the quad's `scaledWidth` and `scaledHeight`
+  // TODO: take into account the quad's `scaledWidth` and `scaledHeight`
+  /// draws part of a [Drawable] described by a [Quad] to the canvas.
   void drawQuad(Drawable drawable, Quad quad, num x, num y,
       [num r = 0, num sx = 1, num sy = 1, num ox = 0, num oy = 0]) {
     if (!drawable.loaded) return;
@@ -191,28 +116,67 @@ class _Graphics {
     }
   }
 
-  void drawToRect(Drawable drawable, Rectangle destinationRect) {
-    if (!drawable.loaded) return;
-    _context.drawImageToRect(drawable.element, destinationRect);
-  }
-
   void drawQuadToRect(Drawable drawable, Quad quad, Rectangle destinationRect) {
     if (!drawable.loaded) return;
     _context.drawImageToRect(drawable.element, destinationRect,
         sourceRect: quad._getSourceRect());
   }
 
-  void setBackgroundColor(Color color) => _backgroundColor = color;
+  void drawToRect(Drawable drawable, Rectangle destinationRect) {
+    if (!drawable.loaded) return;
+    _context.drawImageToRect(drawable.element, destinationRect);
+  }
+
   Color getBackgroundColor() => _backgroundColor;
 
-  /// clears the current active canvas
-  void clear([Color clearColor]) {
-    final color = clearColor ?? _backgroundColor;
-    _context
-      ..save()
-      ..setFillColorRgb(color.r8, color.g8, color.b8, color.a)
-      ..fillRect(0, 0, _currentCanvas.width, _currentCanvas.height)
-      ..restore();
+  Canvas getCanvas() => _currentCanvas;
+
+  /// Gets the width and height of the main canvas as a `Point`.
+  Point getDimensions() => Point(_width, _height);
+
+  /// Gets the height of the main canvas.
+  num getHeight() => _height;
+
+  /// Gets the currently set line width of the graphics state.
+  num getLineWidth() => _context.lineWidth;
+
+  /// Gets the width of the main canvas.
+  num getWidth() => _width;
+
+  /// Draws a line from the point `(x1, y1)` to `(x2, y2)`.
+  void line(num x1, num y1, num x2, num y2) => _context
+    ..beginPath()
+    ..moveTo(x1, y1)
+    ..lineTo(x2, y2)
+    ..stroke();
+
+  /// Creates a new [Canvas] with the given `width` and `height`.
+  Canvas newCanvas(num width, num height) => Canvas(width, height);
+
+  /// 
+  Image newImage(String path) => Image(path);
+
+  Future<Image> newImageAsync(String path) => Image.asyncLoad(path);
+
+  Quad newQuad(num x, num y, num w, num h, num sx, num sy) =>
+      Quad(x, y, w, h, sx, sy);
+
+  void pop() => _context.restore();
+
+  void print(String text, num x, num y, [num maxWidth]) {
+    _context.fillText(text, x, y, maxWidth);
+  }
+
+  void push() => _context.save();
+
+  /// Draws a rectangle with the given style to the screen
+  void rectangle(FillStyle style, num x, num y, num w, num h) {
+    switch (style) {
+      case FillStyle.fill:
+        return _context.fillRect(x, y, w, h);
+      case FillStyle.line:
+        return _context.strokeRect(x, y, w, h);
+    }
   }
 
   /// resets the state of graphics each frame
@@ -225,15 +189,61 @@ class _Graphics {
     setColor(Color.white);
   }
 
-  void push() => _context.save();
-  void pop() => _context.restore();
-  void translate(num x, num y) => _context.translate(x, y);
+  void resetColor() => setColor(Color.white);
+
   void rotate(num r) => _context.rotate(r);
   void scale(num sx, num sy) => _context.scale(sx, sy);
+  void setBackgroundColor(Color color) => _backgroundColor = color;
+  void setCanvas([Canvas canvas]) {
+    _currentCanvas = canvas ?? _mainCanvas;
+  }
 
-  Future<Image> newImageAsync(String path) => Image.asyncLoad(path);
-  Image newImage(String path) => Image(path);
-  Quad newQuad(num x, num y, num w, num h, num sx, num sy) =>
-      Quad(x, y, w, h, sx, sy);
-  Canvas newCanvas(num width, num height) => Canvas(width, height);
+  void setColor(Color color) {
+    if (Color.isSame(color, _color)) return;
+    _color = color;
+    _context.setFillColorRgb(_color.r8, _color.g8, _color.b8, _color.a);
+    _context.setStrokeColorRgb(_color.r8, _color.g8, _color.b8, _color.a);
+    _context.globalAlpha = color.a;
+  }
+
+  void setLineWidth(num width) => _context.lineWidth = width;
+  void setTextBaseline(TextBaseline baseline) {
+    String stringForm;
+    switch (baseline) {
+      case TextBaseline.top:
+        stringForm = "top";
+        break;
+      case TextBaseline.bottom:
+        stringForm = "bottom";
+        break;
+      case TextBaseline.alphabetic:
+        stringForm = "alphabetic";
+        break;
+      case TextBaseline.middle:
+        stringForm = "middle";
+        break;
+      case TextBaseline.hanging:
+        stringForm = "hanging";
+        break;
+    }
+    _context.textBaseline = stringForm;
+  }
+
+  void translate(num x, num y) => _context.translate(x, y);
+
+  void _initMainCanvas(CanvasElement canvas) {
+    _mainCanvas = Canvas.fromElement(canvas);
+    _width = _mainCanvas.width;
+    _height = _mainCanvas.height;
+
+    setCanvas(_mainCanvas);
+
+    _canvasPosition = canvas.getBoundingClientRect().topLeft;
+
+    _context.font = defaultFont;
+    setTextBaseline(defaultTextBaseline);
+    setLineWidth(1);
+    setColor(Color.white);
+    setBackgroundColor(defaultBackgroundColor);
+  }
 }
